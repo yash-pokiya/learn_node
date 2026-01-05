@@ -37,7 +37,7 @@ const registerUser = async (req, res) => {
       email: body.email,
       password: password,
     });
-    return res.status(200).json(registerUser);
+    return res.status(200).json({msg : `welcome ${body.name}`});
   } catch (error) {
     return res.status(500).json({ error: "some error at server" });
   }
@@ -156,10 +156,25 @@ const changePassword = async (req, res) => {
   }
 };
 
+//DELETE USER 
+
+const deleteUser = async(req,res) => {
+  const id = req.user.id;
+  const availableUser = await UserModel.findById({_id :id});
+  if(!availableUser){
+    return res.status(400).json({msg : "User already deleted...!"})
+  }
+  const deletedUser = await UserModel.findByIdAndDelete({_id :id});
+  res.clearCookie("token");
+  return res.status(200).json({msg : "delete user successfull"} 
+  )
+}
+
 module.exports = {
   registerUser,
   loginUser,
   updateUser,
   changePassword,
   logoutUser,
+  deleteUser,
 };

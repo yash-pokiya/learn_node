@@ -7,6 +7,7 @@ const {
   updateUser,
   changePassword,
   logoutUser,
+  deleteUser,
 } = require("../controllers/userController");
 
 
@@ -24,5 +25,8 @@ router.post("/logout", logoutUser);
 
 //CHANGE PASSWORD
 router.post("/changepassword", authMiddleware, changePassword);
+
+//DELETE USER 
+router.post("/deleteuser" , authMiddleware ,deleteUser )
 
 module.exports = router;
