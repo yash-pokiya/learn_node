@@ -12,7 +12,11 @@ const userSchema = mongoose.Schema({
         unique : true,
         required : true
     },
-    password : String
+    password : String,
+    posts :[ {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Post",
+    }]
 })
 
 const UserModel = mongoose.model("user" , userSchema);

@@ -8,6 +8,7 @@ const {
   changePassword,
   logoutUser,
   deleteUser,
+  createPost,
 } = require("../controllers/userController");
 
 
@@ -28,5 +29,8 @@ router.post("/changepassword", authMiddleware, changePassword);
 
 //DELETE USER 
 router.post("/deleteuser" , authMiddleware ,deleteUser )
+
+//CREATE POST
+router.post("/post" , authMiddleware , createPost)
 
 module.exports = router;

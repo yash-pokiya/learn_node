@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/user");
+const postModel = require("../models/post");
+const { default: mongoose } = require("mongoose");
 
 
 //REGISTER USER
@@ -170,6 +172,33 @@ const deleteUser = async(req,res) => {
   )
 }
 
+//CREATE POST
+
+const createPost = async(req,res) => {
+try {
+    const  isLogin = req.cookies?.token;
+    if(!isLogin){
+      return res.status(400).json({
+        msg : "you are not login so you can't post...!"
+      })
+    }
+    const body = req.body;
+    if(!body || !body.title || !body.content){
+      return res.status(400).json({msg : "Must fill all the field...!"})
+    }
+    const post = await postModel.create({
+      title : body.title,
+      content : body.content,
+      user : req.user.id
+    })
+    const user = await UserModel.findById(req.user.id);
+    await  user.posts.push(post._id);
+    await user.save();
+    return res.status(200).json({msg : "Post Created Successfully...!"})
+} catch (error) {
+  return res.status(500).json({error : error.message});
+}
+}
 module.exports = {
   registerUser,
   loginUser,
@@ -177,4 +206,5 @@ module.exports = {
   changePassword,
   logoutUser,
   deleteUser,
+  createPost,
 };
