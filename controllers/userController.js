@@ -4,7 +4,6 @@ const UserModel = require("../models/user");
 const postModel = require("../models/post");
 const { default: mongoose } = require("mongoose");
 
-
 //REGISTER USER
 const registerUser = async (req, res) => {
   try {
@@ -39,7 +38,7 @@ const registerUser = async (req, res) => {
       email: body.email,
       password: password,
     });
-    return res.status(200).json({msg : `welcome ${body.name}`});
+    return res.status(200).json({ msg: `welcome ${body.name}` });
   } catch (error) {
     return res.status(500).json({ error: "some error at server" });
   }
@@ -76,9 +75,9 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       sameSite: "strict",
     });
-    res.status(200).json({ msg: "login success...!🤩" });
+    return res.status(200).json({ msg: "login success...!🤩" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -109,7 +108,6 @@ const updateUser = async (req, res) => {
       },
       { new: true }
     );
-    // res.status(200).json({msg : "user detail updated successfully...!"})
     return res.status(200).json({ msg: "user updated successfully...!" });
   } catch (error) {
     return res.status(500).json({ msg: "some issue with server" });
@@ -152,53 +150,57 @@ const changePassword = async (req, res) => {
     const encryptedNewPass = await bcrypt.hash(newpass, 10);
     user.password = encryptedNewPass;
     await user.save();
-    res.status(200).json({ msg: "password change successfully...!" });
+  return  res.status(200).json({ msg: "password change successfully...!" });
   } catch (error) {
-    res.status(500).json({ msg: "Some error at server...!" });
+  return  res.status(500).json({ msg: "Some error at server...!" });
   }
 };
 
-//DELETE USER 
+//DELETE USER
 
-const deleteUser = async(req,res) => {
+const deleteUser = async (req, res) => {
   const id = req.user.id;
-  const availableUser = await UserModel.findById({_id :id});
-  if(!availableUser){
-    return res.status(400).json({msg : "User already deleted...!"})
+  if (!id) {
+    return res.status(400).json({ msg: "user not loged-in...!" });
   }
-  const deletedUser = await UserModel.findByIdAndDelete({_id :id});
+  const availableUser = await UserModel.findById({ _id: id });
+  if (!availableUser) {
+    return res.status(400).json({ msg: "User already deleted...!" });
+  }
+  const deletedUser = await UserModel.findByIdAndDelete({ _id: id });
   res.clearCookie("token");
-  return res.status(200).json({msg : "delete user successfull"} 
-  )
-}
+  return res.status(200).json({ msg: "delete user successfull" });
+};
 
 //CREATE POST
 
-const createPost = async(req,res) => {
-try {
-    const  isLogin = req.cookies?.token;
-    if(!isLogin){
+const createPost = async (req, res) => {
+  try {
+    const isLogin = req.cookies?.token;
+    if (!isLogin) {
       return res.status(400).json({
-        msg : "you are not login so you can't post...!"
-      })
+        msg: "you are not login so you can't post...!",
+      });
     }
     const body = req.body;
-    if(!body || !body.title || !body.content){
-      return res.status(400).json({msg : "Must fill all the field...!"})
+    if (!body || !body.title || !body.content) {
+      return res.status(400).json({ msg: "Must fill all the field...!" });
     }
     const post = await postModel.create({
-      title : body.title,
-      content : body.content,
-      user : req.user.id
-    })
+      title: body.title,
+      content: body.content,
+      user: req.user.id,
+    });
     const user = await UserModel.findById(req.user.id);
-    await  user.posts.push(post._id);
+    await user.posts.push(post._id);
     await user.save();
-    return res.status(200).json({msg : "Post Created Successfully...!"})
-} catch (error) {
-  return res.status(500).json({error : error.message});
-}
-}
+    return res.status(200).json({ msg: "Post Created Successfully...!" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   registerUser,
   loginUser,
