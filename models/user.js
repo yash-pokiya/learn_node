@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
     password : String,
     posts :[ {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "Post",
+        ref : "post",
     }]
 },{
     timestamps : true

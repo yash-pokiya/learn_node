@@ -200,14 +200,20 @@ const createPost = async (req, res) => {
   }
 };
 
+//GET PROFILE
+
 const getProfile = async (req, res) => {
   try {
     const id = req.user.id;
     if (!id) {
-      return res.status(400).json({ msg: "user not loged-in so you are not able to show profile..!" });
+      return res.status(400).json({
+        msg: "user not loged-in so you are not able to show profile..!",
+      });
     }
-    const user =await UserModel.findById({_id : id});
-    res.status(200).json({Profile : user});
+    const user = await UserModel.findById({ _id: id })
+      .select("-password")
+      .populate({ path: "posts", select: "title content createdAt" });
+    res.status(200).json({ Profile: user });
   } catch (error) {
     return res.status(500).json({ err: `error is ${error.message}` });
   }
