@@ -9,6 +9,7 @@ const {
   logoutUser,
   deleteUser,
   createPost,
+  getProfile
 } = require("../controllers/userController");
 
 
@@ -32,5 +33,8 @@ router.post("/deleteuser" , authMiddleware ,deleteUser )
 
 //CREATE POST
 router.post("/post" , authMiddleware , createPost)
+
+//GET PROFILE
+router.get("/profile" , authMiddleware , getProfile);
 
 module.exports = router;

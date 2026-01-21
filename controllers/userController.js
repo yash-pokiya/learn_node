@@ -106,7 +106,7 @@ const updateUser = async (req, res) => {
       {
         $set: { name: body.name, username: body.username, age: body.age },
       },
-      { new: true }
+      { new: true },
     );
     return res.status(200).json({ msg: "user updated successfully...!" });
   } catch (error) {
@@ -150,9 +150,9 @@ const changePassword = async (req, res) => {
     const encryptedNewPass = await bcrypt.hash(newpass, 10);
     user.password = encryptedNewPass;
     await user.save();
-  return  res.status(200).json({ msg: "password change successfully...!" });
+    return res.status(200).json({ msg: "password change successfully...!" });
   } catch (error) {
-  return  res.status(500).json({ msg: "Some error at server...!" });
+    return res.status(500).json({ msg: "Some error at server...!" });
   }
 };
 
@@ -200,6 +200,18 @@ const createPost = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  try {
+    const id = req.user.id;
+    if (!id) {
+      return res.status(400).json({ msg: "user not loged-in so you are not able to show profile..!" });
+    }
+    const user =await UserModel.findById({_id : id});
+    res.status(200).json({Profile : user});
+  } catch (error) {
+    return res.status(500).json({ err: `error is ${error.message}` });
+  }
+};
 
 module.exports = {
   registerUser,
@@ -209,4 +221,5 @@ module.exports = {
   logoutUser,
   deleteUser,
   createPost,
+  getProfile,
 };
